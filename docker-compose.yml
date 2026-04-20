@@ -1,0 +1,58 @@
+services:
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: leadchain_postgres
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT}:5432"
+    environment:
+      POSTGRES_DB: "${POSTGRES_DB}"
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - Leadchain
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+      args:
+        REPO_URL: https://github.com/AlbertoRomeroPino/Leadchain-backend.git
+        REPO_REF: main
+        APP_ENV: production
+    container_name: leadchain_backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT}:8000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    networks:
+      - Leadchain
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        REPO_URL: https://github.com/AlbertoRomeroPino/Leadchain-frontend.git
+        REPO_REF: main
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+    container_name: leadchain_frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - backend
+    networks:
+      - Leadchain
+
+volumes:
+  postgres_data:
+
+networks:
+  Leadchain:
+    name: Leadchain

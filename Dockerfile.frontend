@@ -1,0 +1,22 @@
+FROM node:20-alpine AS build
+
+ARG REPO_URL=https://github.com/AlbertoRomeroPino/Leadchain-frontend.git
+ARG REPO_REF=main
+ARG VITE_API_BASE_URL=http://192.168.1.40:8000
+
+RUN apk add --no-cache git
+
+WORKDIR /app
+
+RUN git clone --depth 1 --branch ${REPO_REF} ${REPO_URL} /app
+
+RUN npm install
+RUN printf "VITE_API_BASE_URL=%s\n" "$VITE_API_BASE_URL" > .env
+RUN npm exec vite build
+
+FROM nginx:stable-alpine
+COPY --from=build /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
