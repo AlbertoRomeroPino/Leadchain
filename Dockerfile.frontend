@@ -2,7 +2,7 @@ FROM node:20-alpine AS build
 
 ARG REPO_URL=https://github.com/AlbertoRomeroPino/Leadchain-frontend.git
 ARG REPO_REF=main
-ARG VITE_API_BASE_URL=http://192.168.1.40:8000
+ARG VITE_API_BASE_URL=http://localhost:8000
 
 RUN apk add --no-cache git
 
