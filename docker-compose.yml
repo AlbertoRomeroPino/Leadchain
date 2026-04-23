@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile.backend
       args:
         REPO_URL: https://github.com/AlbertoRomeroPino/Leadchain-backend.git
-        REPO_REF: main
+        REPO_REF: docker
         APP_ENV: production
     container_name: leadchain_backend
     restart: unless-stopped

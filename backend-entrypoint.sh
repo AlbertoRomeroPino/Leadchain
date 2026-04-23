@@ -33,7 +33,8 @@ fi
 echo "Sincronizando backend desde GitHub..."
 if [ -d .git ]; then
   git -c safe.directory=/var/www/html fetch --all --prune
-  git -c safe.directory=/var/www/html reset --hard "origin/${BACKEND_BRANCH:-main}"
+  # TODO: devolver al main cuando se termine de mergear
+  git -c safe.directory=/var/www/html reset --hard "origin/${BACKEND_BRANCH:-docker}"
 fi
 
 composer install --no-interaction --prefer-dist --optimize-autoloader --no-progress
@@ -59,11 +60,11 @@ php artisan migrate --force
 user_count=$(psql -h "${DB_HOST}" -U "${DB_USERNAME}" -d "${DB_DATABASE}" -tAc "SELECT count(*) FROM users;")
 user_count="$(echo "$user_count" | tr -d '[:space:]')"
 if [ "${user_count}" = "0" ]; then
-  echo "Tabla users vacía. Ejecutando ProduccionSeeder..."
-  php artisan db:seed --force --class=ProduccionSeeder
+  # echo "Tabla users vacía. Ejecutando ProduccionSeeder..."
+  # php artisan db:seed --force --class=ProduccionSeeder
 
-  #  echo "Tabla users vacía. Ejecutando DatabaseSeeder..."
-  # php artisan db:seed --force --class=DatabaseSeeder
+   echo "Tabla users vacía. Ejecutando DatabaseSeeder..."
+  php artisan db:seed --force --class=DatabaseSeeder
 else
   echo "Ya existen usuarios en la base de datos (${user_count}). No se siembra de nuevo."
 fi

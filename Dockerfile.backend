@@ -1,7 +1,8 @@
 FROM php:8.2-cli
 
 ARG REPO_URL=https://github.com/AlbertoRomeroPino/Leadchain-backend.git
-ARG REPO_REF=main
+# TODO: devolver al main cuando se termine de mergear
+ARG REPO_REF=docker
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
