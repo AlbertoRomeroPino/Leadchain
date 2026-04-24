@@ -1,75 +1,102 @@
-# Dockerización de Leadchain
+<h1 align="center">
+  <a href="#">Leadchain Docker</a>
+</h1>
 
-Esta carpeta contiene la configuración Docker para los dos proyectos:
-- `Leadchain-backend` (Laravel + PHP 8.2)
-- `Leadchain-frontend` (React + TypeScript + Vite)
-- PostgreSQL 15.3 + PostGIS 3.3
+<h3 align="center">Automatización de instalación de dependencias y librerias con docker.</h3>
 
-> Los Dockerfiles clonan directamente los repositorios de GitHub `main`, por lo que no es necesario descargar los proyectos localmente.
+<h3 align="center"> Repositorios </h3>
 
-## Qué se ha creado
+<p align="center">
+  <a href="https://github.com/AlbertoRomeroPino/Leadchain.git">
+    <img alt="Docker" src="https://img.shields.io/badge/Repositorio-Docker-blue?style=for-the-badge&logo=github&logoColor=white">
+  </a>
+</p>
 
-- `docker-compose.yml`
-- `Dockerfile.backend`
-- `Dockerfile.frontend`
-- `nginx.conf`
-- `.env` con credenciales locales
+<p align="center">
+  <a href="https://github.com/AlbertoRomeroPino/Leadchain-frontend">
+    <img alt="Frontend Repo" src="https://img.shields.io/badge/Frontend-Repo-red?style=for-the-badge&logo=github&logoColor=white">
+  </a>
+  <a href="https://github.com/AlbertoRomeroPino/Leadchain-backend">
+    <img alt="Backend API Repo" src="https://img.shields.io/badge/Backend-API%20Repo-black?style=for-the-badge&logo=github&logoColor=white">
+  </a>
+</p>
 
-## Puertos
+<h1 align="center"> Protocolo de Despliegue y Configuración: Ecosistema Leadchain </h1>
 
-- Backend: `http://localhost:8000`
-- Frontend: `http://localhost:5173`
-- PostgreSQL: `localhost:5432`
+Este documento técnico describe de manera exhaustiva el procedimiento necesario para la puesta en marcha del entorno de Leadchain mediante la orquestación de contenedores. Se requiere el cumplimiento riguroso de las fases descritas para garantizar la integridad de los protocolos de seguridad.
 
-## Cómo arrancar
+<h2 align="center">Metodología de Implementación y Configuración de Seguridad </h2>
 
-Desde la carpeta `docker`:
+<h3 align="center">1. Inicialización del Archivo de Configuración Entorno (`.env`)<h3>
 
-```bash
-docker compose up --build
+La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales:
+
+```
+cp .env.example .env
 ```
 
-## Base de datos
+<h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
 
-Se usa Postgres 15.3.
+Se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes y la adquisición de dependencias desde los repositorios de origen:
 
-Los valores actuales son:
+```
+docker-compose up -d --build
+```
 
-- Base de datos: `LeadchainDB`
-- Usuario: `root`
-- Contraseña: `root`
+<h3 align="center">3. Generación de la Clave Criptográfica de la Aplicación (APP_KEY)</h3>
 
-> Modifica estos valores en `docker/.env` cuando quieras cambiar credenciales o nombre.
+Se debe ejecutar el siguiente comando con el fin de instanciar una clave única para el marco de trabajo Laravel. Dicha clave constituye la base del sistema de cifrado de la aplicación:
 
-## Migraciones y seeders
+```
+docker-compose exec backend php artisan key:generate --show
+```
 
-Al iniciar el backend Docker:
+**Procedimiento Obligatorio:** Se requiere la extracción manual de la cadena alfanumérica (prefijada por `base64:`) para su posterior inserción en el parámetro `APP_KEY` dentro del archivo `.env`.
 
-- se ejecuta `php artisan migrate --force`
-- se ejecuta `php artisan db:seed --force --class=DatabaseSeeder` sólo si no hay usuarios en la base de datos
+<h3 align="center">4. Configuración del Secreto de Autenticación (`JWT_SECRET`)</h3>
 
-Esto significa que se cargan los seeders registrados en `DatabaseSeeder.php`, incluyendo `EstadoVisitaSeeder` y `UserSeeder`.
+Para el establecimiento de sesiones seguras mediante JSON Web Tokens, es necesaria la generación de un secreto criptográfico adicional:
 
-## JWT y claves
+```
+docker-compose exec backend php artisan jwt:secret
+```
 
-El backend Docker también genera automáticamente:
+**Procedimiento Obligatorio:** Tras la ejecución, se obtendrá un mensaje de confirmación. Se debe registrar exclusivamente el código contenido dentro de los corchetes `[]` y asignar dicho valor a la variable `JWT_SECRET` en el archivo de configuración `.env`.
 
-- `APP_KEY` con `php artisan key:generate`
-- `JWT_SECRET` con `php artisan jwt:secret`
+<h3 align="center"> 5. Persistencia de Modificaciones </h3>
 
-Así no tienes que hacerlo manualmente.
+Es fundamental asegurar la correcta grabación de los cambios en el archivo `.env`. Se recomienda verificar la ausencia de caracteres residuales o espacios en blanco al final de cada línea para prevenir errores de interpretación por parte del sistema.
 
-> Si prefieres agrupar los seeders en un solo comando, puedes crear un seeder maestro (por ejemplo `DatabaseSeeder` o `InitialDataSeeder`) que invoque `EstadoVisitaSeeder` y `UserSeeder`.
+<h3 align="center"> 6. Reinicialización del Servicio de Aplicación </h3>
 
-## Notas
+Para garantizar que el servidor Apache procese las nuevas variables de entorno de forma efectiva, se debe realizar un reinicio controlado del contenedor encargado del backend:
 
-- El frontend se construye en modo producción usando `vite build` directamente dentro del contenedor y se sirve con `nginx`.
-- El backend usa `php artisan serve --host=0.0.0.0 --port=8000` para que esté accesible desde el host.
-- En el frontend se usa `VITE_API_BASE_URL=http://192.168.1.40:8000` para apuntar al backend desde el navegador en la red local.
+```
+docker-compose restart backend
+```
 
-> Si accedes desde otro dispositivo, usa la IP de tu PC (`192.168.1.40` en tu caso) en lugar de `localhost`.
+<h3 align="center"> 7. Depuración y Optimización del Caché de Sistema </h3>
 
-## Para cambiar el backend a producción real
+Como fase final, se debe ejecutar una limpieza integral de los registros de optimización. Este paso asegura que el entorno de ejecución ignore configuraciones obsoletas y adopte los nuevos parámetros de seguridad:
 
-Si más adelante quieres un stack más robusto, puedes cambiar `Dockerfile.backend` a `php-fpm` + `nginx` en lugar de `php artisan serve`.
-"# Leadchain" 
+```
+docker-compose exec backend php artisan optimize:clear
+```
+
+<h2 align="center"> Especificaciones Técnicas del Ecosistema </h2>
+
+<h3 align="center">Matriz de Versiones de Infraestructura</h3>
+
+| Servicio                       | Nombre del Contenedor  | Componente Tecnológico                        | Versión de Referencia              |
+| ------------------------------ | ---------------------- | ---------------------------------------------- | ----------------------------------- |
+| **Base de Datos**        | `leadchain_postgres` | PostGIS (PostgreSQL + GIS)                     | `15-3.3`                          |
+| **Servicios de Backend** | `leadchain_backend`  | PHP + Apache                                   | `8.2-apache`                      |
+| **Interfaz de Usuario**  | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
+
+<h2 align="center">Puntos Clave del Diseño</h2>
+
+* **Automatización Total:** El script `entrypoint.sh` configura automáticamente el caché, las migraciones de base de datos y la carga de datos iniciales al arrancar.
+* **Red Privada Segura:** Los servicios se comunican internamente mediante la red `Leadchain`. Solo se exponen los puertos imprescindibles, protegiendo la base de datos del exterior.
+* **Datos Siempre a Salvo:** Gracias al volumen `postgres_data`, toda tu información permanece intacta aunque detengas o elimines los contenedores.
+* **Rendimiento Frontend:** La aplicación web se compila y sirve mediante un servidor **Nginx** optimizado, garantizando una respuesta inmediata.
+* **Protección de Claves:** El sistema ignora automáticamente el archivo `.env` en el control de versiones para evitar cualquier filtración de contraseñas.

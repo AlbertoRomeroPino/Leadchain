@@ -1,32 +1,80 @@
-FROM php:8.2-cli
+# FROM php:8.2-cli
 
+# ARG REPO_URL=https://github.com/AlbertoRomeroPino/Leadchain-backend.git
+# # TODO: devolver al main cuando se termine de mergear
+# ARG REPO_REF=docker
+
+# RUN apt-get update \
+#     && apt-get install -y --no-install-recommends \
+#         git \
+#         unzip \
+#         postgresql-client \
+#         libpq-dev \
+#         libzip-dev \
+#     && docker-php-ext-install pdo pdo_pgsql zip \
+#     && rm -rf /var/lib/apt/lists/*
+
+# COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# RUN git clone --depth 1 --branch ${REPO_REF} ${REPO_URL} /var/www/html
+
+# WORKDIR /var/www/html
+
+# RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
+#     && cp .env.example .env \
+#     && chown -R www-data:www-data /var/www/html
+
+# COPY backend-entrypoint.sh /usr/local/bin/backend-entrypoint.sh
+# RUN chmod +x /usr/local/bin/backend-entrypoint.sh
+
+# EXPOSE 8000
+# ENTRYPOINT ["/usr/local/bin/backend-entrypoint.sh"]
+# CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+
+FROM php:8.2-apache
+
+# 1. Definir los argumentos del repositorio (por defecto usa tu main)
 ARG REPO_URL=https://github.com/AlbertoRomeroPino/Leadchain-backend.git
-# TODO: devolver al main cuando se termine de mergear
-ARG REPO_REF=docker
+ARG REPO_REF=main
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        git \
-        unzip \
-        postgresql-client \
-        libpq-dev \
-        libzip-dev \
-    && docker-php-ext-install pdo pdo_pgsql zip \
+# 2. Instalar dependencias del sistema, git (necesario para clonar) y extensiones PostgreSQL
+RUN apt-get update && apt-get install -y \
+    git \
+    libpq-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo pdo_pgsql \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+# 3. Habilitar mod_rewrite de Apache
+RUN a2enmod rewrite
 
-RUN git clone --depth 1 --branch ${REPO_REF} ${REPO_URL} /var/www/html
+# 4. Configurar el DocumentRoot apuntando a la carpeta public de Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
+# 5. Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# 6. Establecer directorio de trabajo
 WORKDIR /var/www/html
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist \
-    && cp .env.example .env \
-    && chown -R www-data:www-data /var/www/html
+# 7. Limpiar la carpeta por defecto de Apache y clonar tu código de GitHub
+RUN rm -rf /var/www/html/* && \
+    git clone --depth 1 --branch ${REPO_REF} ${REPO_URL} .
 
-COPY backend-entrypoint.sh /usr/local/bin/backend-entrypoint.sh
-RUN chmod +x /usr/local/bin/backend-entrypoint.sh
+# 8. Instalar dependencias de Laravel
+RUN composer install --no-dev --optimize-autoloader
 
-EXPOSE 8000
-ENTRYPOINT ["/usr/local/bin/backend-entrypoint.sh"]
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# 9. Ajustar permisos de carpetas críticas
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# 10. Copiar el entrypoint desde tu PC local al contenedor
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["apache2-foreground"]
