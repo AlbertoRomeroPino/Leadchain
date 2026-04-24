@@ -4,6 +4,10 @@
 
 <h3 align="center">Automatización de instalación de dependencias y librerias con docker.</h3>
 
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=ts,js,php,css,html,docker,github,markdown,postgres&theme=dark" height="50" />
+</div>
+
 <h3 align="center"> Repositorios </h3>
 
 <p align="center">
