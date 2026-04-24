@@ -27,7 +27,8 @@ Este documento técnico describe de manera exhaustiva el procedimiento necesario
 
 <h2 align="center">Metodología de Implementación y Configuración de Seguridad </h2>
 
-<h3 align="center">1. Inicialización del Archivo de Configuración Entorno (`.env`)<h3>
+
+<h3 align="center">1. Inicialización del Archivo de Configuración Entorno (.env)</h3>
 
 La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales:
 
