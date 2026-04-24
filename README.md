@@ -27,7 +27,6 @@ Este documento técnico describe de manera exhaustiva el procedimiento necesario
 
 <h2 align="center">Metodología de Implementación y Configuración de Seguridad </h2>
 
-
 <h3 align="center">1. Inicialización del Archivo de Configuración Entorno (.env)</h3>
 
 La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales:
@@ -90,8 +89,8 @@ docker-compose exec backend php artisan optimize:clear
 
 | Servicio                       | Nombre del Contenedor  | Componente Tecnológico                        | Versión de Referencia              |
 | ------------------------------ | ---------------------- | ---------------------------------------------- | ----------------------------------- |
-| **Base de Datos**        | `leadchain_postgres` | PostGIS (PostgreSQL + GIS)                     | `15-3.3`                          |
-| **Servicios de Backend** | `leadchain_backend`  | PHP + Apache                                   | `8.2-apache`                      |
+| **Base de Datos**        | `leadchainDB`        | PostGIS (PostgreSQL + GIS)                     | `15-3.3`                          |
+| **Servicios de Backend** | `leadchain_Api`      | PHP + Apache                                   | `8.2-apache`                      |
 | **Interfaz de Usuario**  | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
 
 <h2 align="center">Puntos Clave del Diseño</h2>
