@@ -8,6 +8,10 @@
   <img src="https://skillicons.dev/icons?i=ts,js,php,css,html,docker,github,markdown,postgres&theme=dark" height="50" />
 </div>
 
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=laravel,react&theme=dark" height="50" />
+</div>
+
 <h3 align="center"> Repositorios </h3>
 
 <p align="center">
