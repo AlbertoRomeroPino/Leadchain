@@ -169,7 +169,7 @@ docker-compose exec backend php artisan optimize:clear
 | **Servicios de Backend** | `leadchain_Api`      | PHP + Apache                                   | `8.2-apache`                      |
 | **Interfaz de Usuario**  | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
 
-## Puntos Clave del Diseño
+<h2 align="center">Puntos Clave del Diseño</h2>
 
 Esta infraestructura ha sido diseñada bajo principios de **resiliencia, seguridad y eficiencia**. A continuación, se detallan los pilares del ecosistema:
 
