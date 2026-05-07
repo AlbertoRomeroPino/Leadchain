@@ -133,7 +133,7 @@ Es fundamental asegurar la correcta grabación de los cambios en el archivo `.en
 Para garantizar que el servidor Apache procese las nuevas variables de entorno de forma efectiva, se debe realizar un reinicio controlado del contenedor encargado del backend:
 
 ```
-docker-compose restart backend
+docker compose down -v && docker compose up -d
 ```
 
 <h3 align="center"> 7. Depuración y Optimización del Caché de Sistema </h3>
