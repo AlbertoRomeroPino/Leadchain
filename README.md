@@ -43,6 +43,56 @@ La etapa preliminar consiste en la preparación de las variables de entorno loca
 cp .env.example .env
 ```
 
+<h3 align="center">1.1 Configuración de Saltos de Línea en Git (Windows)</h3>
+
+**Verifica primero si necesitas hacer esto:**
+
+Con Git Bash, ejecuta este comando para verificar el formato del archivo:
+
+```bash
+file entrypoint.sh
+```
+
+**Si ves esto, estás bien ✅ (puedes saltarte esta sección):**
+```
+entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
+```
+
+**Si ves esto, necesitas continuar ❌:**
+```
+entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable, with CRLF line terminators
+```
+
+**⚠️ IMPORTANTE PARA USUARIOS DE WINDOWS:**
+
+Antes de clonar el repositorio por primera vez, ejecuta este comando para evitar que Git convierta automáticamente los saltos de línea de los scripts shell de LF (Linux) a CRLF (Windows):
+
+```bash
+git config --global core.autocrlf false
+```
+
+**¿Por qué es necesario?**
+- Los scripts shell (como `entrypoint.sh`) requieren saltos de línea Unix (LF)
+- Si Git convierte a CRLF (Windows), el contenedor Docker no podrá ejecutar el script y se reiniciará continuamente
+- Esto genera el error: `exec /usr/local/bin/entrypoint.sh: no such file or directory`
+
+**Si ya clonaste el repositorio sin esta configuración:**
+
+Convierte el archivo a LF manualmente con Git Bash:
+
+```bash
+# Verificar el formato actual
+file entrypoint.sh
+
+# Convertir a LF si tiene CRLF
+sed -i 's/\r$//' entrypoint.sh
+
+# Confirmar que se cambió
+file entrypoint.sh
+```
+
+**Nota:** Con esta conversión local es suficiente para que Docker funcione. Solo los colaboradores del proyecto necesitan hacer push de esta corrección al repositorio central.
+
 <h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
 
 Se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes y la adquisición de dependencias desde los repositorios de origen:
