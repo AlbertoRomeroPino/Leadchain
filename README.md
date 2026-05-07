@@ -49,9 +49,9 @@ Este documento detalla el procedimiento técnico para desplegar el ecosistema de
 
 ---
 
-## 🛠 Metodología de Implementación
+<h2 align="center">Metodología de Implementación</h2>
 
-### 1. Inicialización del Entorno (`.env`)
+<h3 align="center">1. Inicialización del Entorno (`.env`)</h3>
 
 La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales y la correcta interconexión de los servicios.
 
@@ -64,11 +64,11 @@ La etapa preliminar consiste en la preparación de las variables de entorno loca
 cp .env.example .env
 ```
 
-### 1.1 Configuración de Saltos de Línea en Git (Windows)
+<h3 align="center">1.1 Configuración de Saltos de Línea en Git (Windows)</h3>
 
 Esta configuración es crítica para evitar errores de ejecución en scripts de Bash dentro de Docker.
 
-#### Verificación Previa
+<h4 align="center">Verificación Previa</h4>
 
 Ejecuta el siguiente comando en una terminal **Git Bash** para comprobar el formato actual del archivo:
 
@@ -96,7 +96,7 @@ entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable, w
 git config --global core.autocrlf false
 ```
 
-#### 🛠️ Solución Post-Clonación (Si ya clonaste el repo)
+<h4 align="center">Solución Post-Clonación (Si ya clonaste el repo)</h4>
 
 Si ya descargaste el proyecto sin la configuración previa, el archivo `entrypoint.sh` probablemente tenga el formato incorrecto. Puedes repararlo manualmente desde **Git Bash** con los siguientes comandos:
 
@@ -111,7 +111,7 @@ sed -i 's/\r$//' entrypoint.sh
 file entrypoint.sh
 ```
 
-### 2. Orquestación y Construcción de los Servicios
+<h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
 
 Una vez configurado el entorno, se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes personalizadas, la creación de redes internas y la adquisición de dependencias:
 
