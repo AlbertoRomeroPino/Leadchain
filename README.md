@@ -47,18 +47,20 @@ cp .env.example .env
 
 **Verifica primero si necesitas hacer esto:**
 
-Con Git Bash, ejecuta este comando para verificar el formato del archivo:
+Con la terminal Git Bash, ejecuta este comando para verificar el formato del archivo:
 
 ```bash
 file entrypoint.sh
 ```
 
 **Si ves esto, estás bien ✅ (puedes saltarte esta sección):**
+
 ```
 entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
 ```
 
 **Si ves esto, necesitas continuar ❌:**
+
 ```
 entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable, with CRLF line terminators
 ```
@@ -72,6 +74,7 @@ git config --global core.autocrlf false
 ```
 
 **¿Por qué es necesario?**
+
 - Los scripts shell (como `entrypoint.sh`) requieren saltos de línea Unix (LF)
 - Si Git convierte a CRLF (Windows), el contenedor Docker no podrá ejecutar el script y se reiniciará continuamente
 - Esto genera el error: `exec /usr/local/bin/entrypoint.sh: no such file or directory`
