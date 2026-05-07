@@ -1,22 +1,12 @@
 <h1 align="center">
-  <a href="#">Leadchain Docker</a>
+  <a href="https://github.com/AlbertoRomeroPino/Leadchain">Leadchain Docker</a>
 </h1>
 
-<h3 align="center">Automatización de instalación de dependencias y librerias con docker.</h3>
-
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=ts,js,php,css,html,docker,github,markdown,postgres&theme=dark" height="50" />
-</div>
-
-<div align="center">
-  <img src="https://skillicons.dev/icons?i=laravel,react&theme=dark" height="50" />
-</div>
-
-<h3 align="center"> Repositorios </h3>
+<h3 align="center">Orquestación de Microservicios: Automatización de Infraestructura y Librerías</h3>
 
 <p align="center">
-  <a href="https://github.com/AlbertoRomeroPino/Leadchain.git">
-    <img alt="Docker" src="https://img.shields.io/badge/Repositorio-Docker-blue?style=for-the-badge&logo=github&logoColor=white">
+  <a href="https://github.com/AlbertoRomeroPino/Leadchain">
+    <img alt="Docker" src="https://img.shields.io/badge/Repositorio-Docker_Orquestador-blue?style=for-the-badge&logo=github&logoColor=white">
   </a>
 </p>
 
@@ -29,25 +19,58 @@
   </a>
 </p>
 
-<h1 align="center"> Protocolo de Despliegue y Configuración: Ecosistema Leadchain </h1>
+<br />
 
-Este documento técnico describe de manera exhaustiva el procedimiento necesario para la puesta en marcha del entorno de Leadchain mediante la orquestación de contenedores. Se requiere el cumplimiento riguroso de las fases descritas para garantizar la integridad de los protocolos de seguridad.
+<div align="center">
+  <img src="https://skillicons.dev/icons?i=react,laravel&theme=dark" height="65" />
+</div>
 
-<h2 align="center">Metodología de Implementación y Configuración de Seguridad </h2>
+<br />
 
-<h3 align="center">1. Inicialización del Archivo de Configuración Entorno (.env)</h3>
+<div align="center">
+  <!-- Stack de Soporte y Herramientas -->
+  <img src="https://skillicons.dev/icons?i=ts,js,html,css,php,postgres,docker,github,postman,markdown&theme=dark" height="45" />
+</div>
 
-La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales:
+---
 
-```
+<h1 align="center">Protocolo de Despliegue y Configuración: Ecosistema Leadchain</h1>
+
+<p align="center">
+  <em>Guía técnica para la orquestación y puesta en marcha del entorno Leadchain.</em>
+</p>
+
+---
+
+Este documento detalla el procedimiento técnico para desplegar el ecosistema de **Leadchain** mediante la orquestación de contenedores.
+
+> ⚠️ **Importante:**
+> Es indispensable seguir las fases descritas en este manual paso a paso. De esto depende la correcta configuración del entorno y la integridad de los protocolos de seguridad del sistema.
+
+---
+
+## 🛠 Metodología de Implementación
+
+### 1. Inicialización del Entorno (`.env`)
+
+La etapa preliminar consiste en la preparación de las variables de entorno locales. Es imperativo derivar el archivo de configuración activo a partir de la plantilla preexistente para asegurar la compatibilidad de los parámetros iniciales y la correcta interconexión de los servicios.
+
+> ⚠️ **Importante:**
+> El archivo `.env` es el núcleo de la configuración de seguridad. Antes de avanzar, asegúrate de que los valores de conexión coincidan con tu entorno local.
+
+**Ejecuta el siguiente comando en la raíz del proyecto:**
+
+```bash
 cp .env.example .env
 ```
 
-<h3 align="center">1.1 Configuración de Saltos de Línea en Git (Windows)</h3>
+### 1.1 Configuración de Saltos de Línea en Git (Windows)
 
-**Verifica primero si necesitas hacer esto:**
+Esta configuración es crítica para evitar errores de ejecución en scripts de Bash dentro de Docker.
 
-Con la terminal Git Bash, ejecuta este comando para verificar el formato del archivo:
+#### Verificación Previa
+
+Ejecuta el siguiente comando en una terminal **Git Bash** para comprobar el formato actual del archivo:
 
 ```bash
 file entrypoint.sh
@@ -65,42 +88,34 @@ entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable
 entrypoint.sh: Bourne-Again shell script, Unicode text, UTF-8 text executable, with CRLF line terminators
 ```
 
-**⚠️ IMPORTANTE PARA USUARIOS DE WINDOWS:**
+### Configuración Específica para Windows
 
-Antes de clonar el repositorio por primera vez, ejecuta este comando para evitar que Git convierta automáticamente los saltos de línea de los scripts shell de LF (Linux) a CRLF (Windows):
+> **Acción Requerida:** Si utilizas Windows, ejecuta el siguiente comando **antes de clonar** el repositorio. Esto evita que Git convierta automáticamente los saltos de línea de **LF (Linux)** a **CRLF (Windows)**.
 
 ```bash
 git config --global core.autocrlf false
 ```
 
-**¿Por qué es necesario?**
+#### 🛠️ Solución Post-Clonación (Si ya clonaste el repo)
 
-- Los scripts shell (como `entrypoint.sh`) requieren saltos de línea Unix (LF)
-- Si Git convierte a CRLF (Windows), el contenedor Docker no podrá ejecutar el script y se reiniciará continuamente
-- Esto genera el error: `exec /usr/local/bin/entrypoint.sh: no such file or directory`
-
-**Si ya clonaste el repositorio sin esta configuración:**
-
-Convierte el archivo a LF manualmente con Git Bash:
+Si ya descargaste el proyecto sin la configuración previa, el archivo `entrypoint.sh` probablemente tenga el formato incorrecto. Puedes repararlo manualmente desde **Git Bash** con los siguientes comandos:
 
 ```bash
-# Verificar el formato actual
+# 1. Verificar el formato actual
 file entrypoint.sh
 
-# Convertir a LF si tiene CRLF
+# 2. Convertir de CRLF a LF (Elimina los retornos de carro)
 sed -i 's/\r$//' entrypoint.sh
 
-# Confirmar que se cambió
+# 3. Confirmar la corrección
 file entrypoint.sh
 ```
 
-**Nota:** Con esta conversión local es suficiente para que Docker funcione. Solo los colaboradores del proyecto necesitan hacer push de esta corrección al repositorio central.
+### 2. Orquestación y Construcción de los Servicios
 
-<h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
+Una vez configurado el entorno, se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes personalizadas, la creación de redes internas y la adquisición de dependencias:
 
-Se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes y la adquisición de dependencias desde los repositorios de origen:
-
-```
+```bash
 docker-compose up -d --build
 ```
 
@@ -154,10 +169,27 @@ docker-compose exec backend php artisan optimize:clear
 | **Servicios de Backend** | `leadchain_Api`      | PHP + Apache                                   | `8.2-apache`                      |
 | **Interfaz de Usuario**  | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
 
-<h2 align="center">Puntos Clave del Diseño</h2>
+## Puntos Clave del Diseño
 
-* **Automatización Total:** El script `entrypoint.sh` configura automáticamente el caché, las migraciones de base de datos y la carga de datos iniciales al arrancar.
-* **Red Privada Segura:** Los servicios se comunican internamente mediante la red `Leadchain`. Solo se exponen los puertos imprescindibles, protegiendo la base de datos del exterior.
-* **Datos Siempre a Salvo:** Gracias al volumen `postgres_data`, toda tu información permanece intacta aunque detengas o elimines los contenedores.
-* **Rendimiento Frontend:** La aplicación web se compila y sirve mediante un servidor **Nginx** optimizado, garantizando una respuesta inmediata.
-* **Protección de Claves:** El sistema ignora automáticamente el archivo `.env` en el control de versiones para evitar cualquier filtración de contraseñas.
+Esta infraestructura ha sido diseñada bajo principios de **resiliencia, seguridad y eficiencia**. A continuación, se detallan los pilares del ecosistema:
+
+* **Automatización Total:** Mediante el script `entrypoint.sh`, el sistema gestiona de forma autónoma la limpieza de caché, la ejecución de migraciones de base de datos y la carga de *seeders* (datos iniciales) en cada arranque.
+* **Red Privada Segura:** Los microservicios operan dentro de una red aislada denominada `Leadchain`. Solo los servicios estrictamente necesarios exponen puertos al exterior, manteniendo la base de datos protegida de accesos externos no autorizados.
+* **Persistencia Garantizada:** El uso de volúmenes gestionados (`postgres_data`) asegura que la información de la base de datos sea persistente, sobreviviendo incluso a la eliminación o actualización de los contenedores.
+* **Optimización Frontend:** La aplicación se sirve a través de un servidor **Nginx** de alto rendimiento, configurado para entregar contenido estático de forma optimizada y rápida.
+* **Seguridad de Credenciales:** El sistema aplica una política de "cero fugas", ignorando automáticamente archivos sensibles como el `.env` para prevenir la exposición de claves en repositorios públicos.
+
+---
+
+<h2 align="center" id="autor">Autor</h2>
+
+- **Alberto Romero Pino**
+- **Email**: albertoromeropino2004@gmail.com
+- **LinkedIn**: [linkedin.com/in/alberto-romero-pino-8aa0a32ba](https://linkedin.com/in/alberto-romero-pino-8aa0a32ba)
+
+<hr>
+<p align="center">
+  <b>Trabajo de Fin de Grado</b> | <i>Grado en Desarrollo de Aplicaciones Web</i><br>
+  I.E.S.Francisco de los Rios - Curso 2025/2026<br>
+  <i>El código fuente expuesto forma parte de los entregables técnicos para la defensa del proyecto.</i>
+</p>
