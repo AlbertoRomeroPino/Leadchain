@@ -141,31 +141,11 @@ Una vez configurado el entorno, se procede a la inicialización de los microserv
 docker-compose up -d --build
 ```
 
-<h3 align="center">3. Generación de la Clave Criptográfica de la Aplicación (APP_KEY)</h3>
-
-Se debe ejecutar el siguiente comando con el fin de instanciar una clave única para el marco de trabajo Laravel. Dicha clave constituye la base del sistema de cifrado de la aplicación:
-
-```
-docker-compose exec backend php artisan key:generate --show
-```
-
-**Procedimiento Obligatorio:** Se requiere la extracción manual de la cadena alfanumérica (prefijada por `base64:`) para su posterior inserción en el parámetro `APP_KEY` dentro del archivo `.env`.
-
-<h3 align="center">4. Configuración del Secreto de Autenticación (`JWT_SECRET`)</h3>
-
-Para el establecimiento de sesiones seguras mediante JSON Web Tokens, es necesaria la generación de un secreto criptográfico adicional:
-
-```
-docker-compose exec backend php artisan jwt:secret
-```
-
-**Procedimiento Obligatorio:** Tras la ejecución, se obtendrá un mensaje de confirmación. Se debe registrar exclusivamente el código contenido dentro de los corchetes `[]` y asignar dicho valor a la variable `JWT_SECRET` en el archivo de configuración `.env`.
-
-<h3 align="center"> 5. Persistencia de Modificaciones </h3>
+<h3 align="center">3. Persistencia de Modificaciones</h3>
 
 Es fundamental asegurar la correcta grabación de los cambios en el archivo `.env`. Se recomienda verificar la ausencia de caracteres residuales o espacios en blanco al final de cada línea para prevenir errores de interpretación por parte del sistema.
 
-<h3 align="center"> 6. Reinicialización del Servicio de Aplicación </h3>
+<h3 align="center"> 4. Reinicialización del Servicio de Aplicación </h3>
 
 Para garantizar que el servidor Apache procese las nuevas variables de entorno de forma efectiva, se debe realizar un reinicio controlado del contenedor encargado del backend:
 
@@ -173,7 +153,7 @@ Para garantizar que el servidor Apache procese las nuevas variables de entorno d
 docker compose down -v && docker compose up -d
 ```
 
-<h3 align="center"> 7. Depuración y Optimización del Caché de Sistema </h3>
+<h3 align="center"> 5. Depuración y Optimización del Caché de Sistema </h3>
 
 Como fase final, se debe ejecutar una limpieza integral de los registros de optimización. Este paso asegura que el entorno de ejecución ignore configuraciones obsoletas y adopte los nuevos parámetros de seguridad:
 
@@ -181,7 +161,7 @@ Como fase final, se debe ejecutar una limpieza integral de los registros de opti
 docker-compose exec backend php artisan optimize:clear
 ```
 
-<h3 align="center"> 8. Exposición Pública y Pruebas en Dispositivos (Ngrok) </h3>
+<h3 align="center"> 6. Exposición Pública y Pruebas en Dispositivos (Ngrok) </h3>
 
 El ecosistema de Leadchain incluye un contenedor de **Ngrok** completamente automatizado. Esto permite generar un túnel seguro con certificado SSL (`https`) que apunta directamente a tu entorno de desarrollo local.
 
