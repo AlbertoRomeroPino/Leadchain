@@ -185,13 +185,13 @@ docker-compose exec backend php artisan optimize:clear
 
 El ecosistema de Leadchain incluye un contenedor de **Ngrok** completamente automatizado. Esto permite generar un túnel seguro con certificado SSL (`https`) que apunta directamente a tu entorno de desarrollo local.
 
-Cualquier persona, incluido el tribunal de evaluación desde sus propios teléfonos móviles o portátiles, podrá interactuar con la aplicación en tiempo real sin importar en qué red estén conectados.
+Cualquier persona pueden probar desde sus propios teléfonos móviles o portátiles, podrá interactuar con la aplicación en tiempo real sin importar en qué red estén conectados.
 
 #### Cómo Obtener la URL Pública de tu Entorno:
 
 Una vez levantados los contenedores (`docker compose up -d`), puedes recuperar la URL:
 
-Abre tu navegador en la máquina local y accede a [http://localhost:4040](https://www.google.com/search?q=http://localhost:4040&authuser=1). Encontrarás un panel web de Ngrok con la URL activa y un inspector de peticiones HTTP en tiempo real (ideal para depurar durante la presentación).
+Abre tu navegador en la máquina local y accede a [http://localhost:4040](https://www.google.com/search?q=http://localhost:4040&authuser=1). Encontrarás un panel web de Ngrok con la URL activa y un inspector de peticiones HTTP en tiempo real.
 
 <h2 align="center"> Especificaciones Técnicas del Ecosistema </h2>
 
@@ -213,7 +213,6 @@ Esta infraestructura ha sido diseñada bajo principios de **resiliencia, segurid
 * **Persistencia Garantizada:** El uso de volúmenes gestionados (`postgres_data`) asegura que la información de la base de datos sea persistente, sobreviviendo incluso a la eliminación o actualización de los contenedores.
 * **Optimización Frontend:** La aplicación se sirve a través de un servidor **Nginx** de alto rendimiento, configurado para entregar contenido estático de forma optimizada y rápida.
 * **Seguridad de Credenciales:** El sistema aplica una política de "cero fugas", ignorando automáticamente archivos sensibles como el `.env` para prevenir la exposición de claves en repositorios públicos.
-* 
 * **Exposición y Pruebas Multidispositivo No-Invasivas:** Gracias a la integración nativa de Ngrok en la orquestación, el ecosistema puede exponerse a internet bajo demanda con un único comando. Esto elimina la necesidad de desplegar el proyecto en un servidor en la nube de pago durante la fase de validación y permite realizar auditorías o pruebas de usabilidad móvil de forma inmediata.
 
 ---
