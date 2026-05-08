@@ -53,6 +53,22 @@ services:
     networks:
       - Leadchain
 
+  ngrok:
+    image: ngrok/ngrok:latest
+    container_name: leadchain_tunnel
+    restart: unless-stopped
+    command:
+      - "http"
+      - "frontend:80" # Apunta directamente al contenedor frontend en su puerto interno
+    environment:
+      NGROK_AUTHTOKEN: "${NGROK_AUTHTOKEN}"
+    ports:
+      - "4040:4040" # Expone el panel de control web de Ngrok en tu PC local
+    depends_on:
+      - frontend
+    networks:
+      - Leadchain
+
 volumes:
   postgres_data:
 

@@ -111,6 +111,17 @@ sed -i 's/\r$//' entrypoint.sh
 file entrypoint.sh
 ```
 
+**Configuración de Exposición Pública (Ngrok):**
+Para poder probar la aplicación desde cualquier dispositivo móvil o permitir el acceso externo al tribunal de evaluación, abre el archivo `.env` recién creado y configura las siguientes variables clave:
+
+```env
+# Deja la URL del frontend vacía para que use rutas relativas automáticas
+VITE_API_BASE_URL=
+
+# Añade tu token gratuito de Ngrok (Consíguelo en [https://dashboard.ngrok.com](https://dashboard.ngrok.com))
+NGROK_AUTHTOKEN=tu_token_de_ngrok_aqui
+```
+
 <h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
 
 Una vez configurado el entorno, se procede a la inicialización de los microservicios definidos en el manifiesto `docker-compose.yml`. Este proceso automatiza la compilación de imágenes personalizadas, la creación de redes internas y la adquisición de dependencias:
@@ -159,15 +170,33 @@ Como fase final, se debe ejecutar una limpieza integral de los registros de opti
 docker-compose exec backend php artisan optimize:clear
 ```
 
+<h3 align="center"> 8. Exposición Pública y Pruebas en Dispositivos (Ngrok) </h3>
+
+El ecosistema de Leadchain incluye un contenedor de **Ngrok** completamente automatizado. Esto permite generar un túnel seguro con certificado SSL (`https`) que apunta directamente a tu entorno de desarrollo local.
+
+Cualquier persona, incluido el tribunal de evaluación desde sus propios teléfonos móviles o portátiles, podrá interactuar con la aplicación en tiempo real sin importar en qué red estén conectados.
+
+#### Cómo Obtener la URL Pública de tu Entorno:
+
+Una vez levantados los contenedores (`docker compose up -d`), puedes recuperar la URL pública asignada de dos maneras:
+
+* **Opción A (Terminal):** Ejecuta el siguiente comando para filtrar los registros de inicio del túnel y copiar la dirección pública de internet:
+
+  ```bash
+  docker compose logs ngrok
+  ```
+* **Opción B (Interfaz Gráfica):** Abre tu navegador en la máquina local y accede a [http://localhost:4040](https://www.google.com/search?q=http://localhost:4040&authuser=1). Encontrarás un panel web de Ngrok con la URL activa y un inspector de peticiones HTTP en tiempo real (ideal para depurar durante la presentación).
+
 <h2 align="center"> Especificaciones Técnicas del Ecosistema </h2>
 
 <h3 align="center">Matriz de Versiones de Infraestructura</h3>
 
-| Servicio                       | Nombre del Contenedor  | Componente Tecnológico                        | Versión de Referencia              |
-| ------------------------------ | ---------------------- | ---------------------------------------------- | ----------------------------------- |
-| **Base de Datos**        | `leadchainDB`        | PostGIS (PostgreSQL + GIS)                     | `15-3.3`                          |
-| **Servicios de Backend** | `leadchain_Api`      | PHP + Apache                                   | `8.2-apache`                      |
-| **Interfaz de Usuario**  | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
+| Servicio                        | Nombre del Contenedor  | Componente Tecnológico                        | Versión de Referencia              |
+| ------------------------------- | ---------------------- | ---------------------------------------------- | ----------------------------------- |
+| **Base de Datos**         | `leadchainDB`        | PostGIS (PostgreSQL + GIS)                     | `15-3.3`                          |
+| **Servicios de Backend**  | `leadchain_Api`      | PHP + Apache                                   | `8.2-apache`                      |
+| **Interfaz de Usuario**   | `leadchain_frontend` | Node.js (Compilación) / Nginx (Distribución) | `Node 20`/`Nginx stable-alpine` |
+| **Túnel de Exposición** | `leadchain_tunnel`   | Ngrok Agent (Túnel HTTPS seguro)              | `latest`                          |
 
 <h2 align="center">Puntos Clave del Diseño</h2>
 
@@ -178,6 +207,7 @@ Esta infraestructura ha sido diseñada bajo principios de **resiliencia, segurid
 * **Persistencia Garantizada:** El uso de volúmenes gestionados (`postgres_data`) asegura que la información de la base de datos sea persistente, sobreviviendo incluso a la eliminación o actualización de los contenedores.
 * **Optimización Frontend:** La aplicación se sirve a través de un servidor **Nginx** de alto rendimiento, configurado para entregar contenido estático de forma optimizada y rápida.
 * **Seguridad de Credenciales:** El sistema aplica una política de "cero fugas", ignorando automáticamente archivos sensibles como el `.env` para prevenir la exposición de claves en repositorios públicos.
+* **Exposición y Pruebas Multidispositivo No-Invasivas:** Gracias a la integración nativa de Ngrok en la orquestación, el ecosistema puede exponerse a internet bajo demanda con un único comando. Esto elimina la necesidad de desplegar el proyecto en un servidor en la nube de pago durante la fase de validación y permite realizar auditorías o pruebas de usabilidad móvil de forma inmediata.
 
 ---
 
@@ -195,3 +225,4 @@ Esta infraestructura ha sido diseñada bajo principios de **resiliencia, segurid
   I.E.S.Francisco de los Rios - Curso 2025/2026<br>
   <i>El código fuente expuesto forma parte de los entregables técnicos para la defensa del proyecto.</i>
 </p>
+```
