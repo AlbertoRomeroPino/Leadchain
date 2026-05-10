@@ -119,18 +119,44 @@ sed -i 's/\r$//' entrypoint.sh
 file entrypoint.sh
 ```
 
-
-
 <h3 align="center">1.2. Configuración de Exposición Pública (Ngrok)</h3>
 
-Para poder probar la aplicación desde cualquier dispositivo móvil o fuera de tu dispositivo local, abre el archivo `.env` recién creado y configura las siguientes variables clave:
+Este servicio permite probar la aplicación desde dispositivos móviles o fuera de tu red local.
 
-```env
-# Deja la URL del frontend vacía para que use rutas relativas automáticas
+> Acción requerida: Para evitar que el contenedor de Ngrok se reinicie constantemente por error de autenticación, debes elegir una de estas dos opciones antes de ejecutar docker-compose up:
+
+#### **Opción A**: Configurar el Token (Recomendado)
+
+Consigue tu token en dashboard.ngrok.com y añádelo al archivo .env:
+
+```bash
+# Deja esta variable vacía para habilitar rutas relativas
 VITE_API_BASE_URL=
 
-# Añade tu token gratuito de Ngrok (Consíguelo en https://dashboard.ngrok.com)
-NGROK_AUTHTOKEN=tu_token_de_ngrok_aqui
+# Tu token de Ngrok
+NGROK_AUTHTOKEN=tu_token_aqui
+```
+
+#### Opción B: Desactivar el servicio
+
+Si no necesitas acceso externo, **comenta** las líneas del servicio en `docker-compose.yml` para que Docker ignore este contenedor:
+
+```bash
+# ngrok:
+#    image: ngrok/ngrok:latest
+#    container_name: leadchain_tunnel
+#    restart: unless-stopped
+#    command:
+#      - "http"
+#      - "frontend:80" # Apunta directamente al contenedor frontend en su puerto interno
+#    environment:
+#      NGROK_AUTHTOKEN: "${NGROK_AUTHTOKEN}"
+#    ports:
+#      - "4040:4040" # Expone el panel de control web de Ngrok en tu PC local
+#    depends_on:
+#      - frontend
+#    networks:
+#      - Leadchain
 ```
 
 <h3 align="center">2. Orquestación y Construcción de los Servicios</h3>
@@ -141,27 +167,7 @@ Una vez configurado el entorno, se procede a la inicialización de los microserv
 docker-compose up -d --build
 ```
 
-<h3 align="center">3. Persistencia de Modificaciones</h3>
-
-Es fundamental asegurar la correcta grabación de los cambios en el archivo `.env`. Se recomienda verificar la ausencia de caracteres residuales o espacios en blanco al final de cada línea para prevenir errores de interpretación por parte del sistema.
-
-<h3 align="center"> 4. Reinicialización del Servicio de Aplicación </h3>
-
-Para garantizar que el servidor Apache procese las nuevas variables de entorno de forma efectiva, se debe realizar un reinicio controlado del contenedor encargado del backend:
-
-```
-docker compose down -v && docker compose up -d
-```
-
-<h3 align="center"> 5. Depuración y Optimización del Caché de Sistema </h3>
-
-Como fase final, se debe ejecutar una limpieza integral de los registros de optimización. Este paso asegura que el entorno de ejecución ignore configuraciones obsoletas y adopte los nuevos parámetros de seguridad:
-
-```
-docker-compose exec backend php artisan optimize:clear
-```
-
-<h3 align="center"> 6. Exposición Pública y Pruebas en Dispositivos (Ngrok) </h3>
+### 3. Exposición Pública y Pruebas en Dispositivos (Ngrok)
 
 El ecosistema de Leadchain incluye un contenedor de **Ngrok** completamente automatizado. Esto permite generar un túnel seguro con certificado SSL (`https`) que apunta directamente a tu entorno de desarrollo local.
 
@@ -211,4 +217,3 @@ Esta infraestructura ha sido diseñada bajo principios de **resiliencia, segurid
   I.E.S.Francisco de los Rios - Curso 2025/2026<br>
   <i>El código fuente expuesto forma parte de los entregables técnicos para la defensa del proyecto.</i>
 </p>
-```
